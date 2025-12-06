@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAKT DHARA ; BATH IN THE BLOOD RIVER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #121212;
+            --color-surface: #1e1e1e;
+            --color-accent: #ffb74d; /* Amber/Gold for premium look */
+            --color-text: #e0e0e0;
+            --color-console: #000000;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        #game-container {
+            width: 100%;
+            max-width: 700px;
+            background-color: var(--color-surface);
+            border-radius: 12px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            min-height: 650px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 183, 77, 0.1); /* Subtle accent border */
+        }
+        .text-console {
+            white-space: pre-wrap;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            background-color: var(--color-console);
+            color: #b3b3b3;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            max-height: 350px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .status-box {
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid var(--color-accent);
+            font-size: 14px;
+        }
+        .choice-btn {
+            @apply bg-gray-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200 ease-in-out w-full text-left mb-3;
+            border: 1px solid #444;
+        }
+        .choice-btn:hover {
+            @apply bg-gray-600;
+            box-shadow: 0 0 15px rgba(255, 183, 77, 0.3);
+            color: var(--color-accent);
+        }
+        .title-card {
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(145deg, #1e1e1e, #0a0a0a);
+            border-radius: 15px;
+            border: 2px solid var(--color-accent);
+            /* Reset padding at top to make room for image */
+            padding-top: 20px;
+        }
+        /* --- START: Revised GIF Styles for Start Card --- */
+        #start-gif-container {
+            /* Full width container to hold the start image */
+            width: 100%;
+            margin: 0 auto 30px auto; /* Center the image container and add margin below */
+            max-width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        #start-gif-container img {
+            width: 100%; /* Make the image take full width of its container */
+            height: auto;
+            max-height: 250px; /* Constrain the height */
+            object-fit: cover;
+            display: block;
+        }
+        /* --- END: Revised GIF Styles for Start Card --- */
+        
+        .ascii-art {
+            font-family: monospace;
+            color: var(--color-accent);
+            white-space: pre;
+            font-size: 12px;
+            text-shadow: 0 0 5px rgba(255, 183, 77, 0.5);
+            margin-bottom: 30px;
+        }
+        #gif-display {
+            display: none;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 183, 77, 0.2);
+            border: 2px solid #ff5722; 
+            width: 100%; 
+            text-align: center;
+        }
+        #gif-display img {
+            width: 100%; 
+            height: auto;
+            max-height: 300px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="start-card" class="title-card">
+            <div id="start-gif-container">
+                </div>
+            <h1 class="text-4xl font-bold tracking-wider mb-4" style="color: var(--color-accent);">
+                RAKT DHARA : BATH IN THE BLOOD RIVER
+            </h1>
+            <p class="text-lg text-gray-400 mb-8">
+                MADE WITH LOVE
+            </p>
+            <p class="text-md text-gray-500 mb-10">
+                Piyush, your choices will define the survival of your loved ones in the face of absolute dread.
+            </p>
+            <button id="start-btn" class="bg-amber-600 hover:bg-amber-700 text-black text-lg font-bold py-4 px-8 rounded-full shadow-xl transition duration-300 transform hover:scale-105">
+                BEGIN YOUR QUEST
+            </button>
+            <p class="text-sm text-gray-600 mt-4">
+                (Clicking START enables the Main Track and guarantees a start sound.)
+            </p>
+        </div>
+
+        <div id="game-interface" class="hidden flex-1 flex flex-col">
+            <h2 class="text-2xl font-bold mb-4" style="color: var(--color-accent);">RAKT DHARA: BATH IN THE BLOOD RIVER</h2>
+            
+            <div id="gif-display">
+                <img id="scene-gif" src="" alt="Scene Visual">
+            </div>
+
+            <div id="output" class="text-console flex-1"></div>
+            <div id="status" class="status-box"></div>
+            <div id="choices" class="mt-6"></div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // 🚨 CRITICAL: USER ASSETS INTEGRATION
+        // =========================================================================
+        
+        // --- AUDIO ASSETS ---
+        // Ensure these paths are correct relative to your HTML file location.
+        const MAIN_TRACK_URL = './assets/audio/main_track.mp3'; 
+        const CONSTANT_BGM_URL = './assets/audio/constant_bgm.mp3'; 
+        
+        let mainTrackAudio;
+        let constantBGMAudio; 
+
+        // --- VISUAL ASSETS ---
+        const GIF_ASSETS = {
+            'START': './assets/gifs/game_start_gif.gif',
+            'EMPTY_CLASSROOM': './assets/images/empty_classroom_pic.jpg',
+            'SHOTGUN_LOOT': './assets/images/shotgun_looted_pic.jpg',
+            'AYUSH_CALLING': './assets/gifs/signal_ayush_calling.gif',
+            'CAR_CHASE': './assets/gifs/car_chase.gif',
+            'SUDDEN_ZOMBIE': './assets/gifs/sudden_zombie_attack.gif',
+            'SHELTER_TIMELAPSE': './assets/gifs/shelter_months_passing.gif', 
+            'QUIET_TALK': './assets/gifs/anjali_piyush_camp_night_talking.gif', 
+            'RHEA_CRY': './assets/gifs/rhea_saying_save_me.gif',
+            'BOSS_FIGHT': './assets/gifs/boss_fight.gif',
+            'GAME_OVER': './assets/gifs/game_over.gif'
+        };
+
+        // --- GLOBAL STATE ---
+        let INVENTORY = {
+            'Piyush': {'Shotgun_Rounds': 4, 'Rounds_Used': 0, 'Rope': 1, 'Rations': 0, 'Compass': 1, 'Thermite_Bomb': 1},
+            'Anjali': {'Torch': 1, 'Med_Packs': 1, 'Radio': 0, 'Knife': 0},
+            'Vishal': {'Weapon_Name': 'Baseball Bat', 'Iron_Rods': 0, 'Spear_Rod': 0},
+            'Team': {'Fuel_Cans': 0, 'Machetes': 0}
+        };
+        let SURVIVORS = {'Samar_Alive': false, 'Rhea_Rescued': false};
+        let HEALTH = {'Vishal_Hit': false, 'Mini_Van_Damage': 0, 'Samar_Injured': false}; 
+        let CLUES = {'Gold_Key': false, 'Silver_Key': false, 'Extraction_Map_Data': false, 'Anthem_Broadcast': false, 'Final_Destination': ''};
+        let CURRENT_SCENE = 1;
+
+        // --- DOM Elements ---
+        const outputDiv = document.getElementById('output');
+        const statusDiv = document.getElementById('status');
+        const choicesDiv = document.getElementById('choices');
+        const startCard = document.getElementById('start-card');
+        const gameInterface = document.getElementById('game-interface');
+        const gifDisplay = document.getElementById('gif-display');
+        const sceneGif = document.getElementById('scene-gif');
+        const startBtn = document.getElementById('start-btn');
+        const startGifContainer = document.getElementById('start-gif-container');
+        
+        // --- ASSET MAPPING ---
+        const scene_to_asset_map = {
+            'START_CARD': GIF_ASSETS.START,
+            1: GIF_ASSETS.EMPTY_CLASSROOM,
+            12: GIF_ASSETS.QUIET_TALK,
+            15: GIF_ASSETS.AYUSH_CALLING,
+            16: GIF_ASSETS.CAR_CHASE,
+            25: GIF_ASSETS.SUDDEN_ZOMBIE,
+            26: GIF_ASSETS.SHELTER_TIMELAPSE,
+            35: GIF_ASSETS.QUIET_TALK, 
+            41: GIF_ASSETS.RHEA_CRY,
+            50: GIF_ASSETS.BOSS_FIGHT,
+            'GAME_OVER_SCENE': GIF_ASSETS.GAME_OVER
+        };
+
+        // --- AUDIO FUNCTIONS ---
+
+        function setupAudio() {
+            // Setup Main Track
+            mainTrackAudio = new Audio(MAIN_TRACK_URL);
+            mainTrackAudio.volume = 0.5;
+            mainTrackAudio.loop = true; 
+            
+            // Setup Constant BGM Track
+            constantBGMAudio = new Audio(CONSTANT_BGM_URL);
+            constantBGMAudio.volume = 0.7; // Slightly louder for atmosphere
+            constantBGMAudio.loop = true;
+            
+            // Attempt to load metadata so it's ready to play later
+            constantBGMAudio.load();
+        }
+        
+        function playMainTrack() {
+            // Ensure constant BGM is stopped before starting main track
+            constantBGMAudio.pause();
+            
+            // Set current time to 0 to restart main track if it was paused
+            mainTrackAudio.currentTime = 0; 
+            
+            mainTrackAudio.play().catch(e => {
+                console.warn("Main Track playback failed:", e);
+            });
+        }
+        
+        function stopMainTrack() {
+             mainTrackAudio.pause();
+             mainTrackAudio.currentTime = 0;
+        }
+
+        function playConstantBGM() {
+            // Ensure main track is stopped
+            stopMainTrack();
+            
+            // Set current time to 0 to restart BGM if it was paused
+            constantBGMAudio.currentTime = 0; 
+
+            constantBGMAudio.play().catch(e => {
+                // This catch is crucial for debugging path or file issues
+                console.warn("Constant BGM playback failed. Check the file path: " + CONSTANT_BGM_URL, e);
+                // If playback fails here, the user interaction from startGame() wasn't enough
+            });
+        }
+
+        function stopConstantBGM() {
+            constantBGMAudio.pause();
+            constantBGMAudio.currentTime = 0;
+        }
+
+        // Guaranteed audio feedback using Tone.js
+        async function playSimpleStartSound() {
+            await Tone.start();
+            const synth = new Tone.MembraneSynth().toDestination();
+            synth.triggerAttackRelease("C3", "8n");
+            Tone.Transport.scheduleOnce(() => {
+                synth.triggerAttackRelease("G3", "8n");
+            }, "+0.2");
+        }
+
+        function stopAudio() {
+            stopMainTrack();
+            stopConstantBGM();
+        }
+        
+        // --- GIF FUNCTIONS ---
+        
+        function displayGif(assetKey) {
+            const gifUrl = scene_to_asset_map[assetKey];
+            if (gifUrl) {
+                sceneGif.src = gifUrl;
+                gifDisplay.style.display = 'block';
+                outputDiv.scrollTop = outputDiv.scrollHeight; 
+            } else {
+                gifDisplay.style.display = 'none';
+                sceneGif.src = ''; 
+            }
+        }
+        
+        function checkAndTriggerMedia(sceneKey) {
+            displayGif(sceneKey);
+        }
+
+        function displayLootedShotgun() {
+            const img = document.createElement('img');
+            img.src = GIF_ASSETS.SHOTGUN_LOOT;
+            img.alt = "Shotgun Looted";
+            img.className = "rounded-lg shadow-xl mb-4";
+            img.style.maxWidth = '100%';
+            
+            const lootMessage = document.createElement('p');
+            lootMessage.className = "text-green-400 font-bold mb-4";
+            lootMessage.textContent = "✅ NEW LOOT ACQUIRED: SHOTGUN (See Image Above) ✅";
+            
+            outputDiv.appendChild(lootMessage);
+            outputDiv.appendChild(img);
+            outputDiv.scrollTop = outputDiv.scrollHeight; 
+            
+            setTimeout(() => {
+                if(lootMessage.parentNode) lootMessage.remove();
+                if(img.parentNode) img.remove();
+            }, 5000);
+        }
+
+        // --- HELPER FUNCTIONS ---
+
+        function displayStatus() {
+            statusDiv.innerHTML = `
+                <p class="font-bold" style="color: var(--color-accent);">Status & Inventory</p>
+                <p>Piyush (You) - Rounds: <span class="text-amber-300">${INVENTORY.Piyush.Shotgun_Rounds}</span> | Bomb: ${INVENTORY.Piyush.Thermite_Bomb} | Rations: ${INVENTORY.Piyush.Rations} Days</p>
+                <p>Anjali - Med-Packs: ${INVENTORY.Anjali.Med_Packs}</p>
+                <p>Vishal - Weapon: ${INVENTORY.Vishal.Weapon_Name} | Fuel Cans: ${INVENTORY.Team.Fuel_Cans}</p>
+                ${SURVIVORS.Samar_Alive ? '<p class="text-green-400">🤝 Samar (Engineer) is with the team.</p>' : ''}
+                ${SURVIVORS.Rhea_Rescued ? '<p class="text-green-400">🤝 Rhea (Rescued Girl) is with the team.</p>' : ''}
+                ${HEALTH.Vishal_Hit ? '<p class="text-yellow-400">💔 VISHAL MORALE LOW!</p>' : ''}
+                ${HEALTH.Mini_Van_Damage > 0 ? `<p class="text-red-500">⚠️ MINI-VAN DAMAGE: ${HEALTH.Mini_Van_Damage}/3 ⚠️</p>` : ''}
+            `;
+        }
+
+        function appendOutput(text) {
+            outputDiv.innerHTML += text.replace(/\n/g, '<br>') + "<br><br>";
+            outputDiv.scrollTop = outputDiv.scrollHeight; // Scroll to bottom
+        }
+
+        function makeChoice(choices, nextScene) {
+            choicesDiv.innerHTML = '';
+            for (const key in choices) {
+                const button = document.createElement('button');
+                button.className = 'choice-btn';
+                button.textContent = `[${key}] ${choices[key]}`;
+                button.onclick = () => {
+                    choicesDiv.innerHTML = ''; // Clear choices
+                    nextScene(key);
+                };
+                choicesDiv.appendChild(button);
+            }
+        }
+
+        function continueButton(nextScene) {
+            choicesDiv.innerHTML = '';
+            const button = document.createElement('button');
+            button.className = 'choice-btn bg-amber-600 hover:bg-amber-700 text-black';
+            button.textContent = 'Continue...';
+            button.onclick = () => {
+                choicesDiv.innerHTML = ''; // Clear choices
+                nextScene();
+            };
+            choicesDiv.appendChild(button);
+        }
+
+        function gameOver(ending) {
+            stopAudio();
+            displayGif('GAME_OVER_SCENE'); 
+            choicesDiv.innerHTML = '';
+            let endingText = "";
+            let finalMessage = "\nTHANK YOU FOR PLAYING, PIYUSH! Your choices defined the survival of your closest friends.";
+            
+            if (ending === 'A') {
+                endingText = `
+                    <p class="text-3xl font-extrabold text-green-400 mb-4">⭐️ ENDING A: THE NEW NORMAL (Maihar Refugee Camp) ⭐️</p>
+                    <p>Narrative: Tum Maihar ke Refugee Camp mein daakhil hote ho. Safety mil gayi hai, par ek naye dukh ke saath. **Anjali** tumhari kandhe par sir rakhe, gehri saans leti hai. Tumhein abhi bhi Gwalior mission adhoora hone ka dukh hai, par tumhari ankahee mohabbat aur tumhara vaada poora ho chuka hai. Tum zinda ho, aur tumhari family ki talaash abhi jaari hai.</p>
+                `;
+            } else if (ending === 'B') {
+                endingText = `
+                    <p class="text-3xl font-extrabold text-red-500 mb-4">💔 ENDING B: THE ELDER BROTHER'S SACRIFICE 💔</p>
+                    <p class="text-xl text-red-400">THE QURBANI OF AYUSH BHAIYA AND ABHISHEK</p>
+                    <p>Narrative: Walkers ka massive jhund Mini-Van ko gher chuka hai. Mini-Van ka engine fail ho chuka hai. **Ayush Bhaiya** aur **Abhishek** Mini-Van ke darwaze par khade ho jaate hain. Tumhari aankhon mein sirf aansu hain, par Ayush Bhaiya ki aankhon mein sirf shanti aur faisla hai.</p>
+                    <p class="text-yellow-400 mt-3">Ayush Bhaiya: 'Piyush! Meri baat suno, chhote. Bahut ho gaya. Yahin tak tha. Tum mere chote bhai ho, aur yeh meri zimmedari hai. Tumhein zinda rehna hoga. Tumhein hamare Mummy-Papa tak har haal mein pahunchna hoga. **Yeh mera antim hukum hai, chhote. Ise todna mat.**'</p>
+                    <p class="text-yellow-400">Abhishek: 'Bhai, tu nikal ja. Apne Bhaiya ka maan rakhna. Aur mujhe aur Ayush ko kabhi mat bhoolna. **Hum wapas zaroor milenge, kisi aur jahaan mein.**'</p>
+                    <p>Narrative: Tum, Anjali, aur Rhea (agar hai) Mini-Van se door, andhere mein bhaagte ho. Tumhare peeche Ayush Bhaiya aur Abhishek ki aakhiri goliyaan chalne ki awaaz aati hai, aur phir Thermite Bomb ka ek zor ka dhamaka. **Tumhein apne bade bhai ki qurbani deni padi, aur yeh dard tumhari zindagi bhar ka bojh ban jaata hai।**</p>
+                `;
+            } else if (ending === 'C') {
+                endingText = `
+                    <p class="text-3xl font-extrabold text-amber-400 mb-4">✨ ENDING C: THE GWALIOR SIGNAL (Hope and Heroism) ✨</p>
+                    <p>Narrative: Bunker ke gates khulte hain. Tumhein aur tumhari team ko andar le jaaya jaata hai. Tum sab ko Scientists salute karte hain! **Ayush Bhaiya**, apne chhote bhai Piyush ko gale lagate hain. **Anjali**, tumhari taraf dekhti hai, uski aankhon mein darr nahi, sirf pyaar aur samman hai. Tumhara darr, tumhari mohabbat, aur tumhari himmat, sab rang laayi.</p>
+                `;
+            }
+            
+            outputDiv.innerHTML = endingText + finalMessage;
+            statusDiv.innerHTML = '<p class="text-3xl text-red-500 font-extraboxld">-- GAME OVER --</p>';
+
+            // Restart button
+            const restartButton = document.createElement('button');
+            restartButton.className = 'choice-btn bg-blue-600 hover:bg-blue-700';
+            restartButton.textContent = 'Restart Game';
+            restartButton.onclick = () => window.location.reload();
+            choicesDiv.appendChild(restartButton);
+        }
+
+        // --- SCENE IMPLEMENTATIONS (The Game Logic) ---
+
+        function scene_1_to_15_initial_escape(initialChoice = null) {
+            CURRENT_SCENE = 1;
+            checkAndTriggerMedia(CURRENT_SCENE); 
+            outputDiv.innerHTML = ''; 
+            appendOutput(`--- Scene ${CURRENT_SCENE}: Saturday Night Dread (School Classroom) ---`);
+            appendOutput("Narrative: Tum, **Piyush**, Class 9th B mein baithe ho. Bahar tez baarish ke beech Walkers ki ajeeb si cheekhein aur dhamakon ki awaaz aa rahi hai. Har cheez hil rahi hai. **Vishal**, jiska chehra darr se peela pad chuka hai, darwaze par pehra de raha hai, uske haath mein uska purana Baseball Bat hai.");
+            
+            appendOutput("Vishal (Ghabrahat mein, aankhon mein aansu): '**Yaar, Piyush, humein nikalna hoga!** Darwaza toot gaya toh hum sab gaye! Mujhe meri family ki yaad aa rahi hai. Koi raasta toh hoga! Tu humara leader hai, kuchh toh kar! Kuchh soch!'");
+            appendOutput("Piyush (Inner Monologue): *Vishal sahi keh raha hai. Mujhe Ayush Bhaiya aur Anjali ke liye mazboot hona hoga. Yeh darr humein maar dega.*");
+
+            makeChoice({
+                'A': 'Door lock karke table se barricade banao, aur aage badhne ka raasta dekho.', 
+                'B': 'Chupchap window ke neeche jhaanko, bahar ki situation samjho.'
+            }, choice => {
+                appendOutput("Narrative: Tumne jaldi se tables ko door ke saamne khiskaya, aur puraani almaari ko check kiya. Woh thodi khuli hui thi. Jaise hi tumne usey khola, tumhein ek chhipi hui shotgun aur do rounds milte hain. Tumhare haath mein shotgun ka thanda ehsaas, ek naye dar aur ek naye umeed ki shuruwat hai.");
+                INVENTORY.Piyush.Shotgun_Rounds += 2; 
+                displayLootedShotgun(); 
+                scene_12_the_silent_promise(); 
+            });
+        }
+
+        function scene_12_the_silent_promise() {
+            CURRENT_SCENE = 12;
+            checkAndTriggerMedia(CURRENT_SCENE); 
+            appendOutput(`\n--- Scene ${CURRENT_SCENE}: The Silent Promise (Ankahee Mohabbat ka Vaada) ---`);
+            appendOutput("Narrative: Tum, Anjali, aur Vishal ab basement ki taraf ja rahe ho. Basement ke andhere mein ghusne se pehle, **Anjali** achanak rukti hai aur tumhara haath bahut hi kas kar pakad leti hai. Uski hatheli tumhari hatheli par thandi aur kaanpti hui hai. Uski aankhon mein bepanaah darr, aur tumhare liye ankahee fikr hai.");
+            
+            appendOutput("Anjali (Dheere se, ek aakhiri vishwaas ke saath): 'Piyush... Vaada karo. Agar Mini-Van tak main tumse alag ho bhi gayi, toh tum mujhe kabhi akela nahi chhodoge. Main tumhe khona nahi chahti. Yeh safar sirf hamare liye nahi hai, yeh meri **dosti** aur **tumhare vishwaas** ke liye hai. Vaada karo, mere liye.'");
+            appendOutput("Piyush (Tumhara haath uski hatheli par rakhte hue): 'Main vaada karta hoon, Anjali. Chahe jo bhi ho jaaye. Main tumhe is duniya ke ant tak bachaunga. Hum Mini-Van tak saath jayenge.'");
+            appendOutput("Piyush (Inner Monologue): *Uska haath mere haath mein, ek aisi umeed hai jo mujhe har Walker se ladne ki taqat degi. Yeh vaada sirf survival ka nahi, yeh ek naye rishtey ki shuruat hai.*");
+            
+            scene_15_the_elder_brothers_call();
+        }
+
+        function scene_15_the_elder_brothers_call() {
+            CURRENT_SCENE = 15;
+            checkAndTriggerMedia(CURRENT_SCENE); 
+            CLUES.Extraction_Map_Data = true;
+            appendOutput(`\n--- Scene ${CURRENT_SCENE}: The Elder Brother's Authority ---`);
+            appendOutput("Narrative: Basement mein tumhe ek purana radio set milta hai. Data download ho raha hai. Achanak ring! Screen par **Ayush Bhaiya** ka naam flash hota hai. Unki awaaz mein wahi shanti aur authority hai jo hamesha tumhara sahara bani hai.");
+            
+            appendOutput("Ayush Bhaiya (Calm but Urgent, ek bade bhai ka gurur): '**Piyush? Chhote, meri baat suno!** Hum Mini-Van ko tumhari taraf drive kar rahe hain, abhi! Tumhein turant bahar aana hoga, Gwalior ke Highway ki taraf! Koi sawaal nahi, turant! Wahan aur bhi log hain jinhein humein bachaana hai.");
+            appendOutput("Ayush Bhaiya: '**Ek bade bhai ke roop mein, main tumhe yeh antim hukum deta hoon: Zinda rehna!** Hum Mini-Van ke pass milte hain. Don't be late.'");
+            appendOutput("Piyush (Inner Monologue): *Ayush Bhaiya ki awaaz. Mujhe hamesha se pata tha ki woh humein dhoondh lenge. Meri zimmedari ab badh chuki hai.*");
+            
+            scene_16_to_25_reunion();
+        }
+
+
+        function scene_16_to_25_reunion(choice = null) {
+            CURRENT_SCENE = 16;
+            checkAndTriggerMedia(CURRENT_SCENE); 
+            appendOutput(`\n--- Scene ${CURRENT_SCENE}: The Mini-Van Arrival & Reunion (High-Speed Chase) ---`);
+            appendOutput("Narrative: Walkers ka massive jhund tumhare peeche hai. Mini-Van ek zor ki rukawat ke saath rukti hai. **Ayush Bhaiya** aur **Abhishek**, unke haathon mein basic hathiyaar, aag babula Walkers ko cheerte hue tumhari taraf aate hain. Tumhein do anjaan chehre bhi Mini-Van mein dikhte hain: Samar aur Rhea.");
+            
+            SURVIVORS.Samar_Alive = true;
+            INVENTORY.Team.Fuel_Cans = 3;
+            INVENTORY.Piyush.Rations += 3;
+            CLUES.Anthem_Broadcast = true;
+            
+            appendOutput("Abhishek (Ayush ka bachpan ka dost, loyalty se bhara): 'Piyush, jaldi andar! Maine Mini-Van ko secure kar diya hai. Ayush aur main hamesha se saath rahe hain, hum tumhari safety ke liye kuch bhi karenge! Don't worry, bro!'");
+            appendOutput("Ayush Bhaiya (Tez saans لیتے hue): '**Chhote, humne Samar se yeh Mini-Van li hai.** Gwalior mein ek secret facility hai jahaan cure data ho sakta hai. Maihar mein safety zaroor hai, par Gwalior mission is virus ko khatam kar sakta hai. Main tum par bharosa karta hoon. Tum batao, hum Mini-Van kahan le jaayein? **Tumhara faisla hum sab ki aakhiri zindagi tay karega। Yeh tumhara samay hai, chhote।**'");
+            
+            makeChoice({
+                'A': 'Gwalior ki taraf jao. (Trust Ayush Bhaiya\'s strategic vision and the data.)', 
+                'B': 'Maihar ki taraf jao. (Seek immediate Refugee Camp safety.)'
+            }, choice => {
+                if (choice === 'A') {
+                    CLUES.Final_Destination = 'Gwalior';
+                    appendOutput("Piyush's Decision Recorded: Gwalior. (Tumne apne bade bhai ke strategic vision par vishwaas kiya.)");
+                } else {
+                    CLUES.Final_Destination = 'Maihar';
+                    appendOutput("Piyush's Decision Recorded: Maihar. (Tumne immediate safety ko zyada mahatva diya.)");
+                }
+                scene_25_the_first_big_threat();
+            });
+        }
+
+        function scene_25_the_first_big_threat(choice = null) {
+            CURRENT_SCENE = 25;
+            checkAndTriggerMedia(CURRENT_SCENE); 
+            appendOutput(`\n--- Scene ${CURRENT_SCENE}: The First Big Threat (Sudden Attack) ---`);
+            appendOutput("Narrative: Tum Mini-Van mein ho ki achanak Walkers ka pehla jhund saamne se aata hai, ek jum-scare ki tarah! Ayush Bhaiya steering wheel kas kar pakadte hain. Tumhein turant react karna hoga!");
+            
+            appendOutput("Ayush Bhaiya (Zor se): '**Piyush! Tumhe yeh karna hoga!** Tumhe apni taqat dikhaani hogi. Shotgun nikaalo! Abhi! Ghabrahat nahi! Hum sab tumhari taraf dekh rahe hain!'");
+            
+            displayStatus();
+
+            makeChoice({
+                'A': `Shotgun fire karo. (Use 2 Rounds, Remaining: ${INVENTORY.Piyush.Shotgun_Rounds})`, 
+                'B': `Thermite bomb phek do. (Use 1 Bomb, Remaining: ${INVENTORY.Piyush.Thermite_Bomb})`
+            }, choice => {
+                if (choice === 'A') {
+                    if (INVENTORY.Piyush.Shotgun_Rounds >= 2) {
+                        INVENTORY.Piyush.Shotgun_Rounds -= 2;
+                        INVENTORY.Piyush.Rounds_Used += 2;
+                        HEALTH.Mini_Van_Damage += 1;
+                        appendOutput("💥 Tumne 2 rounds fire kiye. Walkers ke jhund mein nuksaan hua, par tez action ke karan Mini-Van ko thoda damage pahuncha. **Vishal** ne tumhe dekhkar himmat haasil ki.");
+                    } else {
+                        appendOutput("❌ Shotgun Rounds khatam! Tum hathiyaar use nahi kar paaye. Mini-Van ko zyaada damage hua. **Anjali** ki aankhon mein ek pal ke liye ghabrahat dikhti hai.");
+                        HEALTH.Mini_Van_Damage += 2;
+                    }
+                } else {
+                    if (INVENTORY.Piyush.Thermite_Bomb >= 1) {
+                        INVENTORY.Piyush.Thermite_Bomb -= 1;
+                        appendOutput("🔥 Thermite Bomb ne pura jhund jala diya! Rasta turant saaf hua. **Abhishek** muskuraata hai, 'Kya shot tha, Piyush!'");
+                    } else {
+                        appendOutput("❌ Thermite Bomb khatam! Tumhein apni jaan bachaani padi, par Mini-Van ko zyaada damage hua. **Ayush Bhaiya** naaraaz hote hain.");
+                        HEALTH.Mini_Van_Damage += 2;
+                    }
+                }
+                scene_26_to_40_shelter_part1();
+            });
+        }
+        
+        function scene_26_to_40_shelter_part1() {
+            CURRENT_SCENE = 26;
+            appendOutput(`\n\n--- Scene ${CURRENT_SCENE}: The Sanctuary (Two Months of Quiet Dread) ---`);
+            appendOutput("Narrative: Tum Mini-Van ko ek chhipe hue warehouse mein park karte ho. Yeh ek must-scene hai, jismein tum sab ek safe shelter mein **do mahine** tak rukte ho. Zindagi mein ek ajeeb si shanti hai. Tum sab sirf aage ki planning کرتے ho. Is waqt mein, tum sab ek doosre ko aur behtar samajhte ho. **Koi Choice nahi hai, yeh waqt aage badhne ke liye zaroori tha।**");
+            checkAndTriggerMedia(CURRENT_SCENE); // Show Shelter/Months Passing GIF
+            
+            appendOutput("\n**Character Reflections during Shelter:**");
+            appendOutput("Piyush: *Mujhe ab bhi Ayush Bhaiya ki authority pasand nahi, par unki planning ne humein bachaaye rakha hai. Main har pal Anjali ko dekhta hoon, aur mere dil mein ek umeed jagti hai.*");
+            appendOutput("Ayush Bhaiya: *Main apne chhote bhai Piyush ki taqat ko dekhta hoon, par uski galti hone par usey protect karne ki zimmedari hamesha meri rahegi. Main Abhishek par poora vishwaas karta hoon.*");
+            appendOutput("Anjali: *Piyush meri umeed hai. Main uske darr ko samajhti hoon, aur uski himmat ko mehsoos karti hoon. Humara rishta ankahee mohabbat se bhara hai.*");
+            appendOutput("Abhishek: *Ayush aur main bachpan ke dost hain. Humari dosti har mushkil se zyada mazboot hai. Main Ayush ki har baat sunta hoon, aur Piyush ko ek chhote bhai ki tarah dekhta hoon.*");
+
+            // Move to the emotional core scene
+            scene_35_emotional_core();
+        }
+
+        function scene_35_emotional_core() {
+            CURRENT_SCENE = 35;
+            
+            // 🎬 CRITICAL AUDIO CHANGE: Stop Main Track, Play Constant BGM Asset
+            stopMainTrack();
+            // Call the revised function
+            playConstantBGM(); 
+
+            checkAndTriggerMedia(CURRENT_SCENE); // Show anjali_piyush_camp_night_talking.gif
+            appendOutput(`\n--- Scene ${CURRENT_SCENE}: A Quiet Night (Anjali and Piyush) ---`);
+            appendOutput("Narrative: Ek shaant raat ko, tum aur Anjali shelter ki chhat (terrace) par baithe ho. **Upar ka aasmaan hazaaron sitaron se bhara hua hai, jo ab dhoop se zyada chamakdaar lagta hai।** Anjali tumhare paas aakar baithti hai. Tum dono sirf ek doosre ki aankhon mein dekhte hain. Bina kisi shabd ke, tumhara bandhan mazboot hota hai.");
+
+            appendOutput("Anjali (Aasman dekhte hue, bahut dheere se): 'Piyush, kya tumhein yaad hai... woh raat? Jab hum school ki chhat par baithe the, aur tumne kaha tha ki tum ek din duniya ghumaoge?'");
+            appendOutput("Piyush (Muskuraate hue, par aankhon mein gehra darr): 'Haan, yaad hai. Par ab... ab toh yeh duniya hi badal gayi hai, Anjali. Mujhe sirf ek darr hai... ki main tum sab ko, Ayush Bhaiya ko, kho na doon. Main us raat se zyada darta hoon, jab maine tumhara haath chhora tha.'");
+            appendOutput("Anjali (Tumhara haath pakadte hue, vishwaas se): '**Tum darrte ho, toh kya hua? Main bhi darti hoon।** Par tumhari aankhon mein main darr se zyada, himmat dekhti hoon. Tum mere liye sirf leader nahi ho, tum meri aakhiri umeed ho. Agar hum zinda rahe, toh hum yeh sitare, kisi behtar duniya mein dekhenge. **Vaada?**'");
+            appendOutput("Piyush (Uski aankhon mein dekhte hue): 'Vaada. Mera haath ab kabhi nahi chhootega.'");
+            
+            continueButton(scene_40_urgent_command);
+        }
+
+        function scene_40_urgent_command() {
+            // 🎬 CRITICAL AUDIO CHANGE: Stop Constant BGM, Restart Main Track
+            stopConstantBGM();
+            playMainTrack();
+
+            CURRENT_SCENE = 40;
+            checkAndTriggerMedia(CURRENT_SCENE); // Reset GIF to whatever comes next or hide it.
+            appendOutput(`\n--- Scene ${CURRENT_SCENE}: The Elder Brother's Urgent Command ---`);
+            appendOutput("Narrative: Ayush Bhaiya tumhein jhatke se uthate hain. Military Radio se message aata hai: 'Mandatory Evacuation. All remaining groups must move now to the designated safe zone.'");
+            
+            appendOutput("Ayush Bhaiya (Firmly, unka darr sirf tumhari safety ke liye hai): 'Piyush, ab waqt action ka hai. Mera faisla antim hai. Hum abhi Mini-Van nikaalenge, Gwalior (ya Maihar) ki taraf! Tyari karo! Har minute ki value hai!'");
+            
+            scene_41_to_45_emotional_core();
+        }
+
+
+        function scene_41_to_45_emotional_core() {
+            CURRENT_SCENE = 41;
+            checkAndTriggerMedia(CURRENT_SCENE); 
+            appendOutput(`\n--- Scene ${CURRENT_SCENE}: Rhea's Cry and The Dilemma ---`);
+            appendOutput("Narrative: Mini-Van aage badhti hai. Raste mein, tumhe ek 10 saal ki ladki **Rhea** (Samar ki choti behen) ek tuti hui building mein chhip kar baithi milti hai. Woh ro رہی hai aur uske haath mein ek chhota sa teddy bear hai.");
+            
+            appendOutput("Rhea (Rote hue, aankhon mein sirf bachaav ki bhookh): 'Piyush Bhaiya, mujhe yahaan se le chalo... please. Main akeli nahi rehna chahti. Main promise karti hoon, main koi trouble nahi doongi. Mujhe bachaao!'");
+            appendOutput("Piyush (Inner Monologue): *Uske aansu... yeh wahi darr hai jo Anjali ki aankhon mein tha. Agar maine usey chhora, toh main kabhi khud ko maaf nahi kar paunga.*");
+            
+            makeChoice({
+                'A': 'Use Mini-Van mein baithao. (Tum Aisha ki galti nahi dohrayi.)', 
+                'B': 'Use chupchap wahan chhod do. (Mini-Van mein zyada load risk hai.)'
+            }, choice => {
+                if (choice === 'B') {
+                    // Critical mistake and flashback trigger
+                    appendOutput("❌ Tum Mini-Van aage badhaate ho. Rhea zor se chillati hai: 'PIYUSH! RUKO!' Tumhein Aisha ki yaad aati hai, aur tum ghabra jaate ho.");
+                    
+                    appendOutput("\n💔 TRAPPED BY THE PAST: RHEA'S CRY TRIGGERS AISHA'S MEMORY 💔");
+
+                    // Ayush saves her
+                    appendOutput("\nAyush Bhaiya (Ayush jumps out, commanding tone, ek bade bhai ka balidaan): '**Piyush, tum Mini-Van control karo! Main jaa raha hoon!**' Ayush Bhaiya ki physical strength aur unka faisla tumhare liye adarsh hai.");
+                    
+                    appendOutput("✅ Ayush Bhaiya ne Rhea ko bacha liya. Tumhara bojh thoda halka hota hai, par Ayush Bhaiya ka darr tumhare dil mein bas jaata hai.");
+                    SURVIVORS.Rhea_Rescued = true;
+                } else {
+                    SURVIVORS.Rhea_Rescued = true;
+                    appendOutput("✅ Tumne Rhea ko Mini-Van mein baithaya. Tumhara vaada pura hua. Anjali tumhein dekhti hai aur uski aankhon mein pyaar aur samman dikhta hai.");
+                }
+
+                // Move to the final rush
+                CURRENT_SCENE = 45;
+                appendOutput(`\n--- Scene ${CURRENT_SCENE}: Samar's Final Act (Sacrifice) ---`);
+                appendOutput("Narrative: Samar, Mini-Van ko aakhiri cover dete hue Walkers ke jhund ko rokta hai. Tum uski qurbani ka dard mehsus karte ho. Woh tumhein dekhta hai, muskuraata hai, aur kehta hai: **'Meri behen ka khayal rakhna, Piyush!'**");
+                appendOutput("**Uska balidaan Mini-Van ko aage badhaata hai।**");
+                
+                scene_46_to_60_final_rush();
+            });
+        }
+
+
+        function scene_46_to_60_final_rush() {
+            CURRENT_SCENE = 46;
+            displayStatus();
+
+            if (HEALTH.Mini_Van_Damage >= 3 || INVENTORY.Team.Fuel_Cans <= 0) {
+                checkAndTriggerMedia('GAME_OVER_SCENE'); 
+                appendOutput("\n🚨 CRITICAL FAILURE (Scene 46): Mini-Van ka engine fail ho gaya ya fuel khatam. Walkers har taraf hain. Ab kuch nahi ho sakta.");
+                gameOver('B'); 
+                return;
+            }
+
+            CURRENT_SCENE = 50;
+            checkAndTriggerMedia(CURRENT_SCENE); 
+            appendOutput(`\n--- Scene ${CURRENT_SCENE}: The Final Drive and Unbreakable Loyalty (BOSS FIGHT) ---`);
+            
+            appendOutput("Narrative: Raste mein ek bada, vishaal Walker Mini-Van ke saamne aa jaata hai. Yeh tumhara aakhiri dushman hai!");
+            appendOutput("Abhishek (Shouting, himmat barkaraar, Ayush ki taraf dekhte hue): 'Ayush! Piyush! Main theek hoon! Main sab sambhaal loonga! Tum log bas Mini-Van ko tez bhagao! Iski aakhiri hadd tak! **Hum teeno bachpan se saath hain! Hum tootenge nahi!**'");
+
+            makeChoice({
+                'A': `Shotgun fire karke Abhishek ko cover do. (2 Rounds use, Remaining: ${INVENTORY.Piyush.Shotgun_Rounds})`, 
+                'B': 'Ayush Bhaiya ko drive karte rehne do. (Trust his speed to outrun.)'
+            }, choice => {
+                if (choice === 'A') {
+                    if (INVENTORY.Piyush.Shotgun_Rounds >= 2) {
+                        INVENTORY.Piyush.Shotgun_Rounds -= 2;
+                        INVENTORY.Piyush.Rounds_Used += 2;
+                        appendOutput("💥 Tumne 2 rounds fire kiye. Abhishek ko cover mila. Mini-Van speed badhati hai aur boss fight ko paar karti hai.");
+                    } else {
+                        appendOutput("❌ Shotgun Rounds khatam! Tum hathiyaar use nahi kar paaye. Abhishek ko khud sambhalna pada, par tum nikal gaye.");
+                    }
+                } else {
+                    appendOutput("Narrative: Tumne Ayush Bhaiya ki speed par bharosa kiya. Mini-Van tezi se aage badhti hai aur boss fight ko paar karti hai.");
+                }
+                
+                CURRENT_SCENE = 60;
+                appendOutput(`\n--- Scene ${CURRENT_SCENE}: The Bunker Lock & Destiny Final ---`);
+
+                if (CLUES.Final_Destination === 'Maihar') {
+                    gameOver('A'); 
+                } else if (CLUES.Final_Destination === 'Gwalior') {
+                    if (CLUES.Anthem_Broadcast) {
+                        appendOutput("\nNarrative: Ayush Bhaiya, final code enter karte hain. System 'ACCESS GRANTED' dikhata hai. Tum sab andar jaate ho. Tumhara pyaar aur himmat rang laayi! **Piyush, tum sirf bache nahi, tumne apne logon ko bachaaya!**");
+                        gameOver('C'); 
+                    } else {
+                        appendOutput("\nNarrative: Gwalior coordinates sahi the, par cure data nahi hai. Bunker hostile hai. Walkers ne Mini-Van ko gher liya. Ab koi raasta nahi bacha. Ayush Bhaiya aur Abhishek aakhiri qurbani dete hain.");
+                        gameOver('B'); 
+                    }
+                }
+            });
+        }
+        
+        // --- GAME INITIALIZATION ---
+
+        function startGame() {
+            playSimpleStartSound(); 
+            playMainTrack(); 
+            
+            startCard.classList.add('hidden');
+            gameInterface.classList.remove('hidden');
+            scene_1_to_15_initial_escape();
+            displayStatus();
+        }
+
+        // --- Event Listeners and Setup ---
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            setupAudio(); 
+
+            startBtn.addEventListener('click', startGame);
+
+            const startGifUrl = GIF_ASSETS.START;
+            if (startGifUrl) {
+                const startImg = document.createElement('img');
+                startImg.src = startGifUrl;
+                startImg.alt = "Game Start Visual";
+                // Added new styling classes for start image
+                startImg.className = "rounded-lg shadow-xl";
+                // Append directly to the container which is styled in CSS
+                startGifContainer.appendChild(startImg);
+            }
+        });
+
+    </script>
+</body>
+</html>
